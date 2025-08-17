@@ -4,6 +4,41 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
+
+class DeviceIdHelper {
+  static Future<String> getToken() async {
+    final deviceInfo = DeviceInfoPlugin();
+    String rawId;
+
+    if (Platform.isAndroid) {
+      final androidInfo = await deviceInfo.androidInfo;
+      rawId = androidInfo.id;
+    } else if (Platform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      rawId = iosInfo.identifierForVendor ?? "unknown-ios";
+    } else {
+      rawId = "unsupported-platform";
+    }
+
+    final bytes = utf8.encode(rawId);
+    final digest = sha256.convert(bytes).toString();
+    final deviceId = digest.substring(0, 16);
+
+    // Token de 8 chars
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    BigInt hashInt = BigInt.parse(digest.substring(0, 16), radix: 16);
+    String token = '';
+    for (int i = 0; i < 8; i++) {
+      token += chars[hashInt.remainder(BigInt.from(chars.length)).toInt()];
+      hashInt = hashInt ~/ BigInt.from(chars.length);
+    }
+
+    return token;
+  }
+}
+
+
+
 class DeviceIdGenerator extends StatefulWidget {
   @override
   _DeviceIdGeneratorState createState() => _DeviceIdGeneratorState();

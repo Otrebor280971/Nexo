@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:nexo/device_id_generator.dart';
 import 'package:nexo/inspect.dart'; // Archivo de análisis
-import 'package:nexo/notifications.dart'; // Archivo de notificaciones
+//import 'package:nexo/notifications.dart'; // Archivo de notificaciones
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -292,19 +293,19 @@ class ChildCodeScreen extends StatefulWidget {
   _ChildCodeScreenState createState() => _ChildCodeScreenState();
 }
 
+
 class _ChildCodeScreenState extends State<ChildCodeScreen> {
   String _generatedCode = '';
   bool _isGenerating = false;
 
   Future<void> _generateCode() async {
     setState(() => _isGenerating = true);
-    
-    // Simular generación de código
-    await Future.delayed(const Duration(seconds: 2));
-    
-    // Generar código de 6 dígitos
-    _generatedCode = (100000 + (900000 * (DateTime.now().millisecondsSinceEpoch % 1000) / 1000)).round().toString();
-    
+
+    _generatedCode = await DeviceIdHelper.getToken();
+    print("Token único del dispositivo: $_generatedCode");
+
+    print("Código del dispositivo: $_generatedCode");
+
     setState(() => _isGenerating = false);
   }
 

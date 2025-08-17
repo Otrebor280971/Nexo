@@ -1,53 +1,78 @@
+import 'package:flutter/material.dart';
 import 'package:notifications/notifications.dart';
-import 'package:flutter/material.dart'; // Necesario para el ScaffoldMessenger
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:nexo/inspect.dart'; // Tu servicio Gemini
 
-import 'package:nexo/inspect.dart'; // Importa tu servicio de Gemini
-
-// Este servicio se encargará de escuchar las notificaciones y analizarlas
 class NotificationService {
-
   final GeminiService _geminiService = GeminiService();
   final Notifications _notifications = Notifications();
-  final BuildContext _context;
 
-  NotificationService(this._context);
+  // Plugin para notificaciones locales
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
 
+  NotificationService() {
+    _initLocalNotifications();
+  }
+
+  /// Inicializa el plugin de notificaciones locales
+  void _initLocalNotifications() {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+
+    _localNotifications.initialize(initializationSettings);
+  }
+
+  /// Inicia la escucha de notificaciones
   Future<void> startListening() async {
     try {
-      // Solicitar el permiso para acceder a las notificaciones
-      bool hasPermission = await _notifications.has  ;
+      // Solicitar permisos
+      bool hasPermission = await _notifications.hasPermission();
       if (!hasPermission) {
         await _notifications.requestPermission();
       }
 
-      // Escuchar el stream de notificaciones
+      // Escuchar notificaciones
       _notifications.notificationStream.listen((NotificationEvent event) async {
         if (event.text != null && event.text!.isNotEmpty) {
-          // Analizar el texto de la notificación con GeminiService
-          String resultadoAnalisis = await _geminiService.analizarMensaje(event.text!);
+          try {
+            String resultadoAnalisis =
+                await _geminiService.analizarMensaje(event.text!);
 
-          // Mostrar una alerta si el mensaje es Negativo
-          if (resultadoAnalisis.startsWith('Negativo')) {
-            _mostrarAlerta(resultadoAnalisis);
+            // Si el mensaje es negativo, mostrar alerta
+            if (resultadoAnalisis.startsWith('Negativo')) {
+              _mostrarAlerta(resultadoAnalisis);
+            }
+          } catch (e) {
+            print('Error analizando notificación: $e');
           }
         }
       });
+
       print('Escucha de notificaciones iniciada.');
     } catch (e) {
       print('Error al iniciar la escucha de notificaciones: $e');
     }
   }
 
-  void _mostrarAlerta(String mensaje) {
-    ScaffoldMessenger.of(_context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '¡ALERTA DE SEGURIDAD! ' + mensaje,
-          style: const TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 10),
-      ),
+  /// Muestra alerta mediante notificación local
+  Future<void> _mostrarAlerta(String mensaje) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'alert_channel',
+      'Alertas de seguridad',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
     );
+
+    const NotificationDetails platformDetails =
+        NotificationDetails(android: androidDetails);
+
+    await _localNotifications.show(
+        0, '¡ALERTA DE SEGURIDAD!', mensaje, platformDetails);
   }
 }

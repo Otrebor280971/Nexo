@@ -10,4 +10,7 @@ router.delete("/delete/:code", childDeviceController.deleteDevice);
 // GET /api/devices/:parentId → obtener dispositivos por usuario
 //router.get("/:parentId", childDeviceController.getDevicesByUser);
 
+// GET información de registro de usuario
+router.get('/check/:deviceId', childDeviceController.checkDevice);
+
 module.exports = router;
