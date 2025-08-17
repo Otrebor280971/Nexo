@@ -1,0 +1,22 @@
+{
+  "name": "lib",
+  "version": "1.0.0",
+  "main": "connection-test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "A new Flutter project.",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.17.1"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  }
+}
