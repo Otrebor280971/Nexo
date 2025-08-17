@@ -8,7 +8,24 @@ import 'package:nexo/notifications.dart'; // Archivo de notificaciones
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await dotenv.load(fileName: "assets/.env");
+
+  final NotificationService _notificationService = NotificationService();
+
+  await _notificationService.initialize(
+    onNotVerified: (String message) {
+      // Redirigir al login o mostrar alert
+      print('⚠️ $message');
+      // Aquí podrías abrir la pantalla de login
+    },
+  );
+
+  bool started = await _notificationService.startListening();
+  if (!started) {
+    print('❌ No se pudo iniciar el servicio de notificaciones');
+  }
+
   runApp(const NexoApp());
 }
 

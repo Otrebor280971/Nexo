@@ -29,10 +29,10 @@ class NotificationService {
   // URL del servidor local
   static const String _baseUrl = 'http://localhost:5000';
   
-  // Callback para redirigir al login
-  Function(String)? onDeviceNotVerified;
 
   /// Inicializa el servicio
+  Function(String)? onDeviceNotVerified;
+
   Future<void> initialize({Function(String)? onNotVerified}) async {
     onDeviceNotVerified = onNotVerified;
     await _initLocalNotifications();
