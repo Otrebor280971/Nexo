@@ -92,7 +92,7 @@ class _SplashScreenState extends State<SplashScreen> {
               CircularProgressIndicator(
                 color: const Color(0xFFFFFFFF),
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 10),
               Text(
                 'Cargando...',
                 style: TextStyle(
@@ -565,13 +565,9 @@ class _ParentRegisterScreenState extends State<ParentRegisterScreen> {
                 Center(
                   child:GestureDetector(
                     onTap:(){
-                      Navigator.pushNamed(context, '/parent-login');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(' Pantalla de login - en desarrollo'),
-                        ),
-                      );
+                      Navigator.pushReplacementNamed(context, '/parent-login');
                     },
+
                     child: RichText(
                       text: TextSpan(
                         text: '¿Ya tienes una cuenta? ',

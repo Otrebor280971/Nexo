@@ -1,7 +1,5 @@
 // parent_login_screen.dart
 import 'package:flutter/material.dart';
-// import 'package:bcrypt/bcrypt.dart';
-
 
 class ParentLoginScreen extends StatefulWidget {
   @override
@@ -23,10 +21,7 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
     super.dispose();
   }
 
-  // Función para verificar la contraseña hasheada
-  // bool _verifyPassword(String password, String hashedPassword) {
-  //   return BCrypt.checkpw(password, hashedPassword);
-  // }
+  // Función eliminada - se puede agregar cuando se implemente la verificación real
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
@@ -270,7 +265,7 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        elevation: 7,
+                        elevation: 5,
                       ),
                       child: _isLoading
                           ? CircularProgressIndicator(
@@ -353,7 +348,7 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/parent-register');
+                        Navigator.pushReplacementNamed(context, '/parent-register');
                       },
                       child: RichText(
                         text: TextSpan(
