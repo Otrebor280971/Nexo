@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bcrypt/bcrypt.dart';
+import 'login.dart'; // AGREGAR ESTA LÍNEA
+
 
 void main() {
   runApp(NexoApp());
@@ -19,6 +21,8 @@ class NexoApp extends StatelessWidget {
         '/user-type': (context) => UserTypeScreen(),
         '/child-code': (context) => ChildCodeScreen(),
         '/parent-register': (context) => ParentRegisterScreen(),
+        '/parent-login': (context) => ParentLoginScreen(), // AGREGAR ESTA LÍNEA
+
       },
     );
   }
@@ -167,7 +171,7 @@ class UserTypeScreen extends StatelessWidget {
                 // Botón Padre/Madre
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/parent-register');
+                    Navigator.pushNamed(context, '/parent-login'); // CAMBIAR ESTA LÍNEA
                   },
                   child: Container(
                     width: double.infinity,
@@ -561,6 +565,7 @@ class _ParentRegisterScreenState extends State<ParentRegisterScreen> {
                 Center(
                   child:GestureDetector(
                     onTap:(){
+                      Navigator.pushNamed(context, '/parent-login');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(' Pantalla de login - en desarrollo'),
@@ -573,11 +578,13 @@ class _ParentRegisterScreenState extends State<ParentRegisterScreen> {
                         style: TextStyle(color: Colors.white70),
                         children: [
                             TextSpan(
-                              text: 'Inicia Sesión',
+                              text: 'Inicia sesión',
                               style: TextStyle(
                                 color:Colors.white,
                                 fontWeight: FontWeight.bold,
-                                decoration: TextDecoration.underline
+                                decoration: TextDecoration.underline,
+                                decorationColor: Colors.white,
+                                decorationThickness: 2,
                               ),
                             ),
                           ],
