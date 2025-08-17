@@ -160,7 +160,7 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      labelText: 'Correo electrónico',
+                      hintText: 'Correo electrónico',
                       prefixIcon: Icon(Icons.email, color: Color(0xFF535BB0)),
                       filled: true,
                       fillColor: Colors.white,
@@ -168,7 +168,7 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
                       ),
-                      labelStyle: TextStyle(color: Color(0xFF2d2e6b)),
+                      hintStyle: TextStyle(color: Color(0xFF2d2e6b)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -187,7 +187,7 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      labelText: 'Contraseña',
+                      hintText: 'Contraseña',
                       prefixIcon: Icon(Icons.lock, color: Color(0xFF535BB0)),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -206,7 +206,7 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
                       ),
-                      labelStyle: TextStyle(color: Color(0xFF2d2e6b)),
+                      hintStyle: TextStyle(color: Color(0xFF2d2e6b)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {

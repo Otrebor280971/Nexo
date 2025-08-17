@@ -414,7 +414,7 @@ class _ParentRegisterScreenState extends State<ParentRegisterScreen> {
                   TextFormField(
                     controller: _nameController,
                     decoration: InputDecoration(
-                      labelText: 'Nombre completo',
+                      hintText: 'Nombre completo',
                       prefixIcon: Icon(Icons.person, color: Color(0xFF535BB0)),
                       filled: true,
                       fillColor: Colors.white,
@@ -437,7 +437,9 @@ class _ParentRegisterScreenState extends State<ParentRegisterScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      labelText: 'Correo electrónico',
+                      // labelText: 'Correo electrónico',
+                      hintText: 'Correo electrónico', // AGREGAR ESTA LÍNEA
+
                       prefixIcon: Icon(Icons.email, color: Color(0xFF535BB0)),
                       filled: true,
                       fillColor: Colors.white,
@@ -463,7 +465,7 @@ class _ParentRegisterScreenState extends State<ParentRegisterScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      labelText: 'Contraseña',
+                      hintText: 'Contraseña',
                       prefixIcon: Icon(Icons.lock, color: Color(0xFF535BB0)),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -500,7 +502,7 @@ class _ParentRegisterScreenState extends State<ParentRegisterScreen> {
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirmPassword,
                     decoration: InputDecoration(
-                      labelText: 'Confirmar Contraseña',
+                      hintText: 'Confirmar Contraseña',
                       prefixIcon: Icon(Icons.lock, color: Color(0xFF535BB0)),
                       suffixIcon: IconButton(
                         icon: Icon(
