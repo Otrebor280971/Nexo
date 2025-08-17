@@ -1,4 +1,3 @@
-// parent_login_screen.dart
 import 'package:flutter/material.dart';
 
 class ParentLoginScreen extends StatefulWidget {
@@ -21,7 +20,6 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
     super.dispose();
   }
 
-  // Función eliminada - se puede agregar cuando se implemente la verificación real
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
@@ -38,13 +36,22 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
 
       setState(() => _isLoading = false);
 
+      // Navegar al HomePage después del login exitoso
+      Navigator.pushNamedAndRemoveUntil(
+        context, 
+        '/parent-home', 
+        (route) => false
+      );
+
       // Simular login exitoso
       ScaffoldMessenger.of(context).showSnackBar(
+        
         SnackBar(
           content: Text('Iniciando sesión...'),
           backgroundColor: Colors.green,
         ),
       );
+      Navigator.pushReplacementNamed(context, '/homepage');
 
       // Aquí navegarías a la pantalla principal
       // Navigator.pushReplacementNamed(context, '/home');
@@ -92,7 +99,7 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
             elevation: 0,
             iconTheme: IconThemeData(color: Colors.white),
             title: Text(
-              'Iniciar Sesión',
+              'Iniciar sesión',
               style: TextStyle(color: Colors.white),
             ),
           ),

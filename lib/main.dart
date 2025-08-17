@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:bcrypt/bcrypt.dart';
-import 'login.dart'; // AGREGAR ESTA LÍNEA
+import 'login.dart';
+import 'homepage.dart'; // AGREGAR ESTA LÍNEA
+
 
 
 void main() {
@@ -21,7 +23,8 @@ class NexoApp extends StatelessWidget {
         '/user-type': (context) => UserTypeScreen(),
         '/child-code': (context) => ChildCodeScreen(),
         '/parent-register': (context) => ParentRegisterScreen(),
-        '/parent-login': (context) => ParentLoginScreen(), // AGREGAR ESTA LÍNEA
+        '/parent-login': (context) => ParentLoginScreen(), 
+        '/parent-home': (context) => ParentHomePage(), // AGREGAR ESTA LÍNEA
 
       },
     );
@@ -324,6 +327,12 @@ class _ParentRegisterScreenState extends State<ParentRegisterScreen> {
           content: Text('Cuenta creada con éxito'),
           backgroundColor: Colors.green,
         ),
+      );
+      // NAVEGAR AL HOME DESPUÉS DEL REGISTRO
+      Navigator.pushNamedAndRemoveUntil(
+        context, 
+        '/parent-home', 
+        (route) => false
       );
     }
   }
