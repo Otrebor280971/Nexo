@@ -4,8 +4,7 @@ import 'login.dart';
 import 'homepage.dart';// AGREGAR ESTA LÍNEA
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nexo/device_id_generator.dart';
-import 'package:nexo/inspect.dart'; // Archivo de análisis
-//import 'package:nexo/notifications.dart'; // Archivo de notificaciones
+import 'package:nexo/notifications.dart'; // Archivo de notificaciones
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -122,13 +121,6 @@ class _SplashScreenState extends State<SplashScreen> {
 // Pantalla de selección: ¿Papá o Hijo?
 class UserTypeScreen extends StatelessWidget {
   const UserTypeScreen({super.key});
-  
-  // Aquí se llamará a la función de la API
-  void _onTapParent(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Login de padres - en desarrollo')),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -780,16 +772,6 @@ class _ChildCodeScreenState extends State<ChildCodeScreen> {
                   ),
                   
                   const SizedBox(height: 30),
-                  
-                  // Botón para generar nuevo código
-                  TextButton.icon(
-                    onPressed: _generateCode,
-                    icon: const Icon(Icons.refresh, color: Color(0xFF535BB0)),
-                    label: const Text(
-                      'Generar nuevo código',
-                      style: TextStyle(color: Color(0xFF535BB0)),
-                    ),
-                  ),
                 ] else ...[
                   // Botón para generar código inicial
                   SizedBox(
