@@ -7,6 +7,7 @@ import 'package:nexo/device_id_generator.dart';
 import 'package:nexo/notifications.dart'; // Archivo de notificaciones
 import 'package:nexo/manual_register_page.dart';
 
+
 void main() async {
 
   runApp(const MyApp());

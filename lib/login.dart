@@ -82,13 +82,13 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
       );
 
       // Simular login exitoso
-      ScaffoldMessenger.of(context).showSnackBar(
+      // ScaffoldMessenger.of(context).showSnackBar(
         
-        SnackBar(
-          content: Text('Iniciando sesión...'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      //   SnackBar(
+      //     content: Text('Iniciando sesión...'),
+      //     backgroundColor: Colors.green,
+      //   ),
+      // );
       Navigator.pushReplacementNamed(context, '/homepage');
 
       // Aquí navegarías a la pantalla principal
