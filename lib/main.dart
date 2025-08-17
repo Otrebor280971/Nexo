@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nexo/device_id_generator.dart';
 import 'package:nexo/notifications.dart'; // Archivo de notificaciones
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

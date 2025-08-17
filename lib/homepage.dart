@@ -1,5 +1,7 @@
 // homepage.dart
 import 'package:flutter/material.dart';
+import 'privacy_ethics.dart'; // Importar la pantalla de privacidad y ética
+
 
 class ParentHomePage extends StatefulWidget {
   @override
@@ -12,6 +14,9 @@ class _ParentHomePageState extends State<ParentHomePage> {
 
   // Lista de alertas de mensajes sospechosos
   List<SuspiciousAlert> suspiciousAlerts = [];
+
+  // Variable para controlar si se han aceptado los términos de privacidad
+  bool privacyTermsAccepted = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +46,12 @@ class _ParentHomePageState extends State<ParentHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Sección de privacidad y ética (si no se han aceptado los términos)
+                      if (!privacyTermsAccepted) ...[
+                        _buildPrivacyEthicsSection(),
+                        SizedBox(height: 30),
+                      ],
+                      
                       // Sección de dispositivos
                       _buildDevicesSection(),
                       SizedBox(height: 30),
@@ -110,6 +121,114 @@ class _ParentHomePageState extends State<ParentHomePage> {
               ],
             ),
           ),
+          
+          // Botón de configuración de privacidad (siempre visible)
+          GestureDetector(
+            onTap: () => _navigateToPrivacyEthics(),
+            child: Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: privacyTermsAccepted 
+                  ? Colors.green.withOpacity(0.2)
+                  : Colors.orange.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                privacyTermsAccepted ? Icons.verified_user : Icons.security,
+                color: privacyTermsAccepted ? Colors.green : Colors.orange,
+                size: 24,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPrivacyEthicsSection() {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.orange.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.orange.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(Icons.security, color: Colors.orange, size: 28),
+              ),
+              SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Configuración requerida',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      'Privacidad y ética',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 15),
+          Text(
+            'Antes de agregar dispositivos, es necesario revisar y aceptar nuestros compromisos de privacidad y uso ético.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+              height: 1.4,
+            ),
+          ),
+          SizedBox(height: 15),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => _navigateToPrivacyEthics(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    'Configurar ahora',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -131,20 +250,28 @@ class _ParentHomePageState extends State<ParentHomePage> {
               ),
             ),
             GestureDetector(
-              onTap: () => _showAddDeviceDialog(),
+              onTap: privacyTermsAccepted 
+                ? () => _showAddDeviceDialog()
+                : () => _showPrivacyRequiredDialog(),
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Color(0xFF535BB0),
+                  color: privacyTermsAccepted 
+                    ? Color(0xFF535BB0)
+                    : Colors.grey.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.add, color: Colors.white, size: 16),
+                    Icon(
+                      privacyTermsAccepted ? Icons.add : Icons.lock,
+                      color: Colors.white,
+                      size: 16,
+                    ),
                     SizedBox(width: 4),
                     Text(
-                      'Agregar',
+                      privacyTermsAccepted ? 'Agregar' : 'Bloqueado',
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ],
@@ -282,7 +409,9 @@ class _ParentHomePageState extends State<ParentHomePage> {
             ),
             SizedBox(height: 5),
             Text(
-              'Agrega el primer dispositivo de tu hijo',
+              privacyTermsAccepted 
+                ? 'Agrega el primer dispositivo de tu hijo'
+                : 'Configura primero la privacidad y ética',
               style: TextStyle(
                 color: Colors.white54,
                 fontSize: 14,
@@ -432,6 +561,65 @@ class _ParentHomePageState extends State<ParentHomePage> {
     }
   }
 
+  // Función para navegar a la pantalla de privacidad y ética
+  void _navigateToPrivacyEthics() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PrivacyEthicsScreen(),
+      ),
+    );
+    
+    // Si el usuario completó la configuración de privacidad
+    if (result == true) {
+      setState(() {
+        privacyTermsAccepted = true;
+      });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('¡Ahora puedes agregar dispositivos de forma segura!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  // Diálogo que se muestra cuando se intenta agregar un dispositivo sin aceptar términos
+  void _showPrivacyRequiredDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.security, color: Colors.orange),
+            SizedBox(width: 8),
+            Text('Configuración requerida'),
+          ],
+        ),
+        content: Text(
+          'Para agregar dispositivos, primero debes revisar y aceptar nuestros compromisos de privacidad y uso ético.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancelar'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              _navigateToPrivacyEthics();
+            },
+            child: Text('Configurar ahora', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Diálogo para agregar dispositivo
   void _showAddDeviceDialog() {
     final _codeController = TextEditingController();
@@ -448,14 +636,14 @@ class _ParentHomePageState extends State<ParentHomePage> {
             TextField(
               controller: _codeController,
               decoration: InputDecoration(
-                hintText: 'Código de 6 dígitos',
+                hintText: 'Código de 8 dígitos',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                prefixIcon: Icon(Icons.qr_code),
+                // prefixIcon: Icon(Icons.qr_code),
               ),
               keyboardType: TextInputType.number,
-              maxLength: 6,
+              maxLength: 8,
             ),
           ],
         ),
@@ -475,7 +663,7 @@ class _ParentHomePageState extends State<ParentHomePage> {
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Ingresa un código válido de 8 dígitos'),
+                    content: Text('Ingresa un código válido de 6 dígitos'),
                     backgroundColor: Colors.red,
                   ),
                 );
