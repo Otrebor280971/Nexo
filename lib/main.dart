@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bcrypt/bcrypt.dart';
 import 'login.dart';
-import 'homepage.dart';// AGREGAR ESTA LÍNEA
+import 'homepage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nexo/device_id_generator.dart';
 import 'package:nexo/notifications.dart'; // Archivo de notificaciones
