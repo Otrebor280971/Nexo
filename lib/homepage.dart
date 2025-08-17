@@ -1,7 +1,12 @@
+
 // homepage.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:convert'; // <- AGREGAR ESTA IMPORTACIÓN
 import 'privacy_ethics.dart'; // Importar la pantalla de privacidad y ética
 import 'education_resources.dart'; // Importar la pantalla de educación
+import 'package:nexo/api_service.dart';
+
 
 class ParentHomePage extends StatefulWidget {
   @override
@@ -640,14 +645,14 @@ class _ParentHomePageState extends State<ParentHomePage> {
             TextField(
               controller: _codeController,
               decoration: InputDecoration(
-                hintText: 'Código de 6 dígitos',
+                hintText: 'Código de 8 dígitos',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 prefixIcon: Icon(Icons.qr_code),
               ),
-              keyboardType: TextInputType.number,
-              maxLength: 6,
+              keyboardType: TextInputType.text,
+              maxLength: 8,
             ),
           ],
         ),
@@ -661,13 +666,13 @@ class _ParentHomePageState extends State<ParentHomePage> {
               backgroundColor: Color(0xFF535BB0),
             ),
             onPressed: () {
-              if (_codeController.text.length == 6) {
+              if (_codeController.text.length == 8) {
                 _addDevice(_codeController.text);
                 Navigator.pop(context);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Ingresa un código válido de 6 dígitos'),
+                    content: Text('Ingresa un código válido de 8 dígitos'),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -681,21 +686,150 @@ class _ParentHomePageState extends State<ParentHomePage> {
   }
 
   // Función para agregar dispositivo
-  void _addDevice(String code) {
-    setState(() {
-      connectedDevices.add(Device(
-        id: code,
-        name: 'Dispositivo ${code}',
-      ));
-    });
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Dispositivo conectado exitosamente'),
-        backgroundColor: Colors.green,
+  void _addDevice(String code) async {
+  // 1. Mostrar indicador de carga
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => Center(
+      child: Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 15),
+            Text('Conectando dispositivo...'),
+          ],
+        ),
       ),
-    );
+    ),
+  );
+
+  try {
+    // 2. Obtener el parentId del almacenamiento seguro
+    const storage = FlutterSecureStorage();
+    String? parentId = await storage.read(key: 'userId');
+
+    if (parentId == null) {
+      Navigator.pop(context); // Cerrar indicador de carga
+      _showErrorSnackBar('Error: No se encontró el ID de usuario. Vuelve a iniciar sesión.');
+      return;
+    }
+
+    // 3. Validar que el código tenga el formato correcto
+    if (code.length != 8 || !RegExp(r'^\d+$').hasMatch(code)) {
+      Navigator.pop(context); // Cerrar indicador de carga
+      _showErrorSnackBar('El código debe tener exactamente 8 dígitos.');
+      return;
+    }
+
+    // 4. Realizar la llamada a la API
+    print('Intentando registrar dispositivo con código: $code para padre: $parentId');
+    
+    bool success = await registerDevice(code, parentId, 'Dispositivo de mi hijo');
+    
+    Navigator.pop(context); // Cerrar indicador de carga
+
+    // 5. Manejar el resultado de la llamada
+    if (success) {
+      // Si fue exitoso, actualiza el estado de la UI
+      setState(() {
+        connectedDevices.add(Device(
+          id: code,
+          name: 'Dispositivo $code',
+        ));
+      });
+      
+      _showSuccessSnackBar('¡Dispositivo conectado exitosamente!');
+      
+      // Opcional: Guardar la lista actualizada en almacenamiento local
+      await _saveDevicesList();
+      
+    } else {
+      _showErrorSnackBar('Error: Código inválido o dispositivo ya registrado.');
+    }
+    
+  } catch (e) {
+    Navigator.pop(context); // Cerrar indicador de carga
+    print('Error al conectar dispositivo: $e');
+    _showErrorSnackBar('Error de conexión. Verifica tu internet e intenta de nuevo.');
   }
+}
+
+// Funciones auxiliares para mostrar mensajes
+void _showSuccessSnackBar(String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Row(
+        children: [
+          Icon(Icons.check_circle, color: Colors.white),
+          SizedBox(width: 8),
+          Expanded(child: Text(message)),
+        ],
+      ),
+      backgroundColor: Colors.green,
+      behavior: SnackBarBehavior.floating,
+      duration: Duration(seconds: 3),
+    ),
+  );
+}
+
+void _showErrorSnackBar(String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Row(
+        children: [
+          Icon(Icons.error, color: Colors.white),
+          SizedBox(width: 8),
+          Expanded(child: Text(message)),
+        ],
+      ),
+      backgroundColor: Colors.red,
+      behavior: SnackBarBehavior.floating,
+      duration: Duration(seconds: 4),
+    ),
+  );
+}
+
+// Función para guardar la lista de dispositivos localmente (opcional)
+Future<void> _saveDevicesList() async {
+  const storage = FlutterSecureStorage();
+  List<Map<String, String>> devicesList = connectedDevices
+      .map((device) => {'id': device.id, 'name': device.name})
+      .toList();
+  
+  await storage.write(
+    key: 'connected_devices',
+    value: jsonEncode(devicesList),
+  );
+}
+
+// Función para cargar dispositivos guardados al iniciar (agregar al initState)
+Future<void> _loadSavedDevices() async {
+  const storage = FlutterSecureStorage();
+  String? devicesJson = await storage.read(key: 'connected_devices');
+  
+  if (devicesJson != null) {
+    try {
+      List<dynamic> devicesList = jsonDecode(devicesJson);
+      setState(() {
+        connectedDevices = devicesList
+            .map((device) => Device(
+                  id: device['id'] ?? '',
+                  name: device['name'] ?? 'Dispositivo desconocido',
+                ))
+            .toList();
+      });
+    } catch (e) {
+      print('Error al cargar dispositivos guardados: $e');
+    }
+  }
+}
 
   // Función para eliminar dispositivo
   void _removeDevice(Device device) {

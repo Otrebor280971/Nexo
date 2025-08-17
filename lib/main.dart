@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bcrypt/bcrypt.dart';
+import 'package:nexo/api_service.dart';
 import 'login.dart';
 import 'homepage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,9 +10,6 @@ import 'package:nexo/manual_register_page.dart';
 
 void main() async {
 
-  runApp(const MyApp());
-
-  /*
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: "assets/.env");
@@ -32,19 +29,7 @@ void main() async {
     print('❌ No se pudo iniciar el servicio de notificaciones');
   }
 
-  runApp(const NexoApp());*/
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override Widget build(BuildContext context) { 
-    return MaterialApp(
-      title: 'UUID Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: ParentLoginScreen(),
-      ); 
-  }
+  runApp(const NexoApp());
 }
 
 class NexoApp extends StatelessWidget {
@@ -346,21 +331,31 @@ class _ParentRegisterScreenState extends State<ParentRegisterScreen> {
     super.dispose();
   }
 
-  //Función para hashear la contraseña
-  String _hashPassword(String password) {
-    return BCrypt.hashpw(password, BCrypt.gensalt());
-  }
-
   Future<void> _createAccount() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      final rawPassword = _passwordController.text;
-      final hashedPassword = _hashPassword(rawPassword);
+      final email = _emailController.text;
+      final password = _passwordController.text;
 
-      print("Contraseña original: $rawPassword");
-      print("Contraseña hasheada: $hashedPassword");
+      try{
+        final user = await signup(email, password);
 
+        if(user){
+          Navigator.pushReplacementNamed(context, '/parent-home');
+        }
+      }catch(e){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()), // Muestra el mensaje de error de la excepción
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        // Ocultar el indicador de carga
+        setState(() => _isLoading = false);
+      }
+/*
       // Simular creacion de cuenta
       await Future.delayed(Duration(seconds: 2));
 
@@ -377,7 +372,7 @@ class _ParentRegisterScreenState extends State<ParentRegisterScreen> {
         context, 
         '/parent-home', 
         (route) => false
-      );
+      );*/
     }
   }
 
