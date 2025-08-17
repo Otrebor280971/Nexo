@@ -12,6 +12,21 @@ exports.registerDevice = async (req, res) => {
   }
 };
 
+
+exports.searchDevice = async (req, res) => {
+  try{
+    const {code} = req.params;
+    const device = await Device.findOne({code});
+
+    if(!device){
+      return res.status(404).json({error:"Device not found"});
+    }
+
+    res.status(200).json(device);
+  }catch(error){
+    res.status(500).json({error: error.message});
+  }
+};
 // Obtener dispositivos de un usuario
 // exports.getDevicesByUser = async (req, res) => {
 //   try {
