@@ -1,7 +1,7 @@
 // homepage.dart
 import 'package:flutter/material.dart';
 import 'privacy_ethics.dart'; // Importar la pantalla de privacidad y ética
-
+import 'education_resources.dart'; // Importar la pantalla de educación
 
 class ParentHomePage extends StatefulWidget {
   @override
@@ -58,6 +58,10 @@ class _ParentHomePageState extends State<ParentHomePage> {
                       
                       // Sección de alertas
                       _buildAlertsSection(),
+                      SizedBox(height: 30),
+                      
+                      // Sección de educación y recursos
+                      _buildEducationSection(),
                     ],
                   ),
                 ),
@@ -636,14 +640,14 @@ class _ParentHomePageState extends State<ParentHomePage> {
             TextField(
               controller: _codeController,
               decoration: InputDecoration(
-                hintText: 'Código de 8 dígitos',
+                hintText: 'Código de 6 dígitos',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                // prefixIcon: Icon(Icons.qr_code),
+                prefixIcon: Icon(Icons.qr_code),
               ),
               keyboardType: TextInputType.number,
-              maxLength: 8,
+              maxLength: 6,
             ),
           ],
         ),
@@ -721,6 +725,167 @@ class _ParentHomePageState extends State<ParentHomePage> {
             child: Text('Eliminar', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+
+  // Sección de educación y recursos
+  Widget _buildEducationSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Educación y recursos',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 15),
+        
+        Container(
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF535BB0).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(Icons.school, color: Color(0xFF2196F3), size: 28),
+                  ),
+                  SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Aprende a proteger mejor',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2d2e6b),
+                          ),
+                        ),
+                        Text(
+                          'Guías y consejos para padres',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF757575),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 15),
+              Text(
+                'Accede a recursos educativos sobre ciberacoso, grooming, contenido inapropiado y más. Aprende qué hacer en situaciones de riesgo.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF757575),
+                  height: 1.4,
+                ),
+              ),
+              SizedBox(height: 15),
+              
+              // Quick tips preview
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Color(0xFFF8F9FA),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Color(0xFF2196F3).withOpacity(0.2)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.lightbulb_outline, color: Color(0xFF2196F3), size: 16),
+                        SizedBox(width: 6),
+                        Text(
+                          'Consejo rápido:',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2196F3),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      'Habla regularmente con tu hijo/a sobre sus actividades digitales sin juzgar, creando un espacio seguro para compartir.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF495057),
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 15),
+              
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => _navigateToEducationResources(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF2196F3),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.menu_book, color: Colors.white, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Ver recursos educativos',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Función para navegar a recursos educativos
+  void _navigateToEducationResources() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EducationResourcesScreen(),
       ),
     );
   }
