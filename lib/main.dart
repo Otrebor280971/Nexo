@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bcrypt/bcrypt.dart';
 
 void main() {
   runApp(NexoApp());
@@ -17,6 +18,7 @@ class NexoApp extends StatelessWidget {
       routes: {
         '/user-type': (context) => UserTypeScreen(),
         '/child-code': (context) => ChildCodeScreen(),
+        '/parent-register': (context) => ParentRegisterScreen(),
       },
     );
   }
@@ -165,10 +167,7 @@ class UserTypeScreen extends StatelessWidget {
                 // Botón Padre/Madre
                 GestureDetector(
                   onTap: () {
-                    // Por ahora solo mostrar mensaje
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Login de padres - en desarrollo')),
-                    );
+                    Navigator.pushNamed(context, '/parent-register');
                   },
                   child: Container(
                     width: double.infinity,
@@ -269,6 +268,332 @@ class UserTypeScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+//Registro para padres
+class ParentRegisterScreen extends StatefulWidget {
+  @override
+  _ParentRegisterScreenState createState() => _ParentRegisterScreenState();
+}
+
+class _ParentRegisterScreenState extends State<ParentRegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
+
+  @override
+  void dispose(){
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  //Función para hashear la contraseña
+  String _hashPassword(String password) {
+    return BCrypt.hashpw(password, BCrypt.gensalt());
+  }
+
+  Future<void> _createAccount() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
+
+      final rawPassword = _passwordController.text;
+      final hashedPassword = _hashPassword(rawPassword);
+
+      print("Contraseña original: $rawPassword");
+      print("Contraseña hasheada: $hashedPassword");
+
+      // Simular creacion de cuenta
+      await Future.delayed(Duration(seconds: 2));
+
+      setState(() => _isLoading = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cuenta creada con éxito'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient( 
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF010324), // Azul oscuro
+              Color(0xFF1a1b4b), // Azul medio
+              Color(0xFF2d2e6b), // Azul más claro
+            ],
+          ),
+        ),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: IconThemeData(color: Colors.white),
+            title: Text(
+              'Crear cuenta',
+              style:TextStyle(color: Colors.white),
+            ),
+          ),
+          body:SingleChildScrollView(
+            padding:EdgeInsets.all(24.0),
+            child:Form(
+              key: _formKey,
+              child:Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+
+                  Center( 
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF535BB0), Color(0xFF7D82B8)],
+                        ),
+                        borderRadius: BorderRadius.circular(50),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFF535BB0).withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.person_add,
+                        size: 50,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 40),
+
+                  Text(
+                    'Bienvenido',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  
+                  SizedBox(height: 10),
+                  
+                  Text(
+                    'Crea tu cuenta',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white70,
+                      height: 1.5,
+                    ),
+                  ),
+
+                  SizedBox(height: 40),
+            
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Nombre completo',
+                      prefixIcon: Icon(Icons.person, color: Color(0xFF535BB0)),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      labelStyle: TextStyle(color: Color(0xFF2d2e6b)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor ingrese su nombre';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: 'Correo electrónico',
+                      prefixIcon: Icon(Icons.email, color: Color(0xFF535BB0)),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      labelStyle: TextStyle(color: Color(0xFF2d2e6b)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor ingresa tu correo electrónico';
+                      }
+                      if(!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return 'Por favor ingresa un correo válido';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    decoration: InputDecoration(
+                      labelText: 'Contraseña',
+                      prefixIcon: Icon(Icons.lock, color: Color(0xFF535BB0)),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                          color: Color(0xFF535BB0),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      labelStyle: TextStyle(color: Color(0xFF2d2e6b)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor ingrese su contraseña';
+                      }
+                      if (value.length < 8) {
+                        return 'La contraseña debe tener al menos 8 caracteres';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: _obscureConfirmPassword,
+                    decoration: InputDecoration(
+                      labelText: 'Confirmar Contraseña',
+                      prefixIcon: Icon(Icons.lock, color: Color(0xFF535BB0)),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                          color: Color(0xFF535BB0),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      labelStyle: TextStyle(color: Color(0xFF2d2e6b)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor confirma tu contraseña';
+                      }
+                      if (value != _passwordController.text) {
+                        return 'Las contraseñas no coinciden';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 40),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _createAccount,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF535BB0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 5,
+                      ),
+                      child: _isLoading
+                        ? CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        )
+                        : Text(
+                          'Crear cuenta',
+                          style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                        ),  
+                      ),
+                  ),
+                ),
+                SizedBox(height: 30),
+
+                Center(
+                  child:GestureDetector(
+                    onTap:(){
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(' Pantalla de login - en desarrollo'),
+                        ),
+                      );
+                    },
+                    child: RichText(
+                      text: TextSpan(
+                        text: '¿Ya tienes una cuenta? ',
+                        style: TextStyle(color: Colors.white70),
+                        children: [
+                            TextSpan(
+                              text: 'Inicia Sesión',
+                              style: TextStyle(
+                                color:Colors.white,
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.underline
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20,)
+                ],
+              ),
+            ),
+          ),
+        ),
+      )
+    );
+  }   
 }
 
 // Pantalla para generar código (Hijo) con gradiente azul claro
