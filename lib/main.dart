@@ -5,8 +5,13 @@ import 'homepage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nexo/device_id_generator.dart';
 import 'package:nexo/notifications.dart'; // Archivo de notificaciones
+import 'package:nexo/manual_register_page.dart';
 
 void main() async {
+
+  runApp(const MyApp());
+
+  /*
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: "assets/.env");
@@ -26,7 +31,19 @@ void main() async {
     print('❌ No se pudo iniciar el servicio de notificaciones');
   }
 
-  runApp(const NexoApp());
+  runApp(const NexoApp());*/
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override Widget build(BuildContext context) { 
+    return MaterialApp(
+      title: 'UUID Demo',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: ParentLoginScreen(),
+      ); 
+  }
 }
 
 class NexoApp extends StatelessWidget {

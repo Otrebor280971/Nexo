@@ -37,8 +37,6 @@ class DeviceIdHelper {
   }
 }
 
-
-
 class DeviceIdGenerator extends StatefulWidget {
   @override
   _DeviceIdGeneratorState createState() => _DeviceIdGeneratorState();

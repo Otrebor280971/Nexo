@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nexo/api_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+const storage = FlutterSecureStorage();
 
 class ParentLoginScreen extends StatefulWidget {
   @override
@@ -20,6 +24,9 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
     super.dispose();
   }
 
+  Future<void> _signup() async {
+
+  }
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
@@ -27,6 +34,37 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
 
       final email = _emailController.text;
       final password = _passwordController.text;
+
+      try {
+        // Llamada a la función de login del API
+        final userId = await login(email, password);
+        await storage.write(key: 'userId', value: userId);
+
+        // Si la llamada fue exitosa (no se lanzó una excepción)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('¡Inicio de sesión exitoso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Almacenar el ID del usuario de forma segura si es necesario
+        // const storage = FlutterSecureStorage();
+        // await storage.write(key: 'userId', value: userId);
+
+        // Navegar a la pantalla principal
+        Navigator.pushReplacementNamed(context, '/parent-home');
+      } catch (e) {
+        // Manejar errores de la API (credenciales inválidas, etc.)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()), // Muestra el mensaje de error de la excepción
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        // Ocultar el indicador de carga
+        setState(() => _isLoading = false);
+      }/*
 
       print("Email: $email");
       print("Contraseña ingresada: $password");
@@ -55,6 +93,7 @@ class _ParentLoginScreenState extends State<ParentLoginScreen> {
 
       // Aquí navegarías a la pantalla principal
       // Navigator.pushReplacementNamed(context, '/home');
+      */
     }
   }
 

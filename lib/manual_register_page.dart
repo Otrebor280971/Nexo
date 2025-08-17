@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:nexo/api_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ManualRegisterPage extends StatefulWidget {
+  const ManualRegisterPage({super.key});
+
   @override
-  _ManualRegisterPageState createState() => _ManualRegisterPageState();
+  ManualRegisterPageState createState() => ManualRegisterPageState();
 }
 
-class _ManualRegisterPageState extends State<ManualRegisterPage> {
+class ManualRegisterPageState extends State<ManualRegisterPage> {
   final _controller = TextEditingController();
   String _status = "";
 
-  void _registerToken() {
+  void _registerToken() async{
     String token = _controller.text.trim();
 
     if (token.length != 8) {
@@ -19,13 +23,31 @@ class _ManualRegisterPageState extends State<ManualRegisterPage> {
       return;
     }
 
-    // Aquí puedes enviar el token al backend para registrar el dispositivo
-    // Por ejemplo: await api.registerDevice(token);
-    
+    const storage = FlutterSecureStorage();
+    String? parentId = await storage.read(key: 'userId');
+    String alias = "Mi Celular";
+    //String parentId = "66b2f84a87dbfc02b4b8e321";
 
-    setState(() {
-      _status = "Token registrado correctamente: $token";
-    });
+    if (parentId == null) {
+      setState(() {
+        _status = "Error: ID de usuario no encontrado. Por favor, inicie sesión de nuevo.";
+      });
+      // O puedes navegar de regreso a la pantalla de login
+      // Navigator.pushReplacementNamed(context, '/parent-login');
+      return;
+    }
+
+    bool success = await registerDevice(token, parentId, alias);
+
+    if(success){
+      setState(() {
+        _status = "Token registrado";
+      });
+    } else {
+      setState(() {
+        _status = "Error al registrar el token";
+      });
+    }
     _controller.clear();
   }
 
